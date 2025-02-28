@@ -1,0 +1,285 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
+
+:root {
+	color-scheme: dark;
+	box-sizing: border-box;
+	font-size: 16px;
+	font-family: 'system-ui', sans-serif;
+}
+
+button {
+	appearance: none;
+	border: none;
+	background: none;
+	font: inherit;
+	-webkit-tap-highlight-color: transparent;
+}
+
+html, body, #game {
+	height: 100%;
+}
+
+#game {
+	display: grid;
+	place-content: center;
+	grid-template-columns: 300px;
+	gap: 3rem;
+	position: relative;
+	transition: background-color 1s;
+}
+
+#game[data-turn="green"] {
+	--turn-color: rgb(0 75% 0);
+}
+#game[data-turn="red"] {
+	--turn-color: rgb(75% 0 0);
+}
+#game[data-winner="draw"] {
+	--turn-color: rgb(50% 50% 50%);
+}
+
+/**
+ * dynamically hide one side of marker svg
+ * based on the current turn / already-marked cell
+ */
+#game[data-turn="green"] .grid-cell:not([data-player]) svg .cross,
+#game[data-turn="red"] .grid-cell:not([data-player]) svg .circle,
+.grid-cell[data-player="green"] svg .cross,
+.grid-cell[data-player="red"] svg .circle {
+	display: none;
+}
+
+/* styling for game ending */
+#game[data-winner] {
+	background-color: color-mix(in srgb, var(--turn-color) 5%, transparent);
+}
+#game[data-winner] .game-turn {
+	box-shadow: 0 0 20px 5px var(--turn-color);
+}
+
+.game-turn {
+	text-align: center;
+	font-size: 2rem;
+	background-color: var(--turn-color);
+	padding: 0.25em 1em;
+	border-radius: 100vw;
+	font-family: 'Lilita One';
+	transition: background-color 0.5s ease-out;
+}
+
+.game-grid {
+	--gap: 30px;
+	--columns: repeat(3, 1fr);
+	display: grid;
+	aspect-ratio: 1;
+	gap: var(--gap);
+	grid-template-rows: var(--columns);
+	grid-template-columns: var(--columns);
+	position: relative;
+}
+
+.grid-cell {
+	cursor: pointer;
+	outline: none;
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		scale: 0;
+		rotate: 90deg;
+		transition-property: scale, rotate, filter;
+		transition-duration: 0.5s;
+		> g > g {
+			transition: stroke-dasharray 0.5s;
+		}
+	}
+	&[data-player] {
+		pointer-events: none;
+	}
+	&:is([data-player], :hover, :focus-visible) svg {
+		scale: 1;
+		rotate: 0deg;
+	}
+	&:not([data-player]) svg {
+		filter: drop-shadow(0 0 5px var(--turn-color));
+	}
+	&:active svg {
+		filter: drop-shadow(0 0 20px var(--turn-color));
+		transition-duration: 0.25s;
+	}
+	&[data-player] svg {
+		transition-delay: 0s, 0s, 0.5s;
+	}
+	&[data-player] svg > g > g,
+	&:not([data-player]):active svg > g > g {
+		/* --dasharray-join-anim is set by svg file */
+		stroke-dasharray: var(--dasharray-join-anim);
+	}
+}
+
+.grid-rule {
+	content: '';
+	position: absolute;
+	inset: -5%;
+	margin: auto;
+	background-color: currentcolor;
+	border-radius: 50%;
+	--thickness: 4px;
+}
+
+.grid-rules {
+	display: contents;
+}
+
+.grid-rule:nth-child(1) {
+	grid-column: 1 / span 2;
+	width: var(--thickness);
+}
+.grid-rule:nth-child(2) {
+	grid-column: 2 / span 2;
+	width: var(--thickness);
+}
+.grid-rule:nth-child(3) {
+	grid-row: 1 / span 2;
+	height: var(--thickness);
+}
+.grid-rule:nth-child(4) {
+	grid-row: 2 / span 2;
+	height: var(--thickness);
+}
+
+.game-restart {
+	cursor: pointer;
+	position: absolute;
+	grid-row: 1;
+	grid-column: 2;
+	margin-left: 0.5em;
+	padding: 0.25em 0.5em;
+	border-radius: 50%;
+	aspect-ratio: 1;
+	background-color: rgb(100% 100% 100%);
+	box-shadow: 0 0 0 20px transparent;
+	animation: reloadButton 0.5s;
+	transition: filter 0.25s;
+
+	svg {
+		vertical-align: middle;
+	}
+	&:active {
+		animation: none;
+	}
+	&:active, &:focus-visible {
+		filter: brightness(0.5);
+	}
+	~ * {
+		animation: fadeIn 1s;
+	}
+	&:active ~ * {
+		animation: none;
+	}
+}
+
+@keyframes reloadButton {
+	from {
+		rotate: 1turn;
+		box-shadow: 0 0 0 0 rgb(75% 75% 75%);
+	}
+}
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+}
+
+.winner-line {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.winner-line svg {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+.winner-line svg rect {
+	--width: 120%;
+	--height: 50%;
+	width: var(--width);
+	height: var(--height);
+	x: 50%;
+	y: 50%;
+	ry: calc(var(--height) / 2);
+	scale: 0 1;
+	fill: currentcolor;
+	stroke: transparent;
+	stroke-width: 4px;
+	stroke-dasharray: 20 20;
+	stroke-linecap: round;
+	transform: translate(-50%, -50%);
+	transform-box: fill-box;
+	filter: drop-shadow(0 0 30px var(--turn-color));
+
+	#game[data-winner] & {
+		--height: 120%;
+		fill: transparent;
+		stroke: currentcolor;
+		filter: none;
+		scale: 1;
+		transition-property: scale, fill, height, ry, stroke, filter;
+		transition-duration: 0.5s;
+		transition-delay: 0.1s, 0.75s, 0.75s, 0.75s, 0.75s, 1s;
+		animation: runningStroke 10s linear infinite;
+	}
+
+	#game[data-winner="draw"] & {
+		display: none;
+	}
+}
+
+@keyframes runningStroke {
+	to {
+		stroke-dashoffset: 800;
+	}
+}
+
+/* rotation and grid mapping */
+
+.winner-line {
+	&:not(.diagonal) {
+		grid-row: var(--position, 1) / span 1;
+	}
+	&.diagonal {
+		grid-row: 2 / span 1;
+	}
+}
+
+.winner-line {
+	&.diagonal svg rect {
+		rotate: 45deg;
+		width: calc(var(--width) * 0.9 * sqrt(2));
+	}
+	&.diagonal.anti svg rect {
+		rotate: -45deg;
+	}
+}
+
+/* rotate the entire board for vertical winner-line */
+/* transpose grid + rotate + mirror */
+.game-grid:has(.winner-line.vertical) {
+	grid-auto-flow: column;
+	transform: rotate(-90deg) rotateY(180deg);
+}
+
+/* disable drop-shadow in mobile for performance */
+@media (pointer: coarse) {
+	svg, svg * {
+		filter: none !important;
+	}
+}

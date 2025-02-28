@@ -1,0 +1,35 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+	<title>Site favicon</title>
+	<text y="1em 2.2em" font-size="40" textLength="100" filter="url(#fillGreen)">⭕⭕</text>
+	<text y="1em 2.2em" font-size="40" textLength="100" filter="url(#fillRed)" transform="rotate(90)">❌❌</text>
+	<defs>
+		<filter id="fillGreen">
+			<feFlood flood-color="rgb(0 75% 0)" result="flood"/>
+			<feComposite in="flood" in2="SourceAlpha" operator="in"/>
+		</filter>
+		<filter id="fillRed">
+			<feFlood flood-color="rgb(75% 0 0)" result="flood"/>
+			<feComposite in="flood" in2="SourceAlpha" operator="in"/>
+		</filter>
+	</defs>
+
+	<!-- animated SVG favicon -->
+	<!-- only Firefox desktop renders the animation in tab favicon -->
+	<style>
+		text {
+			transform-origin: center;
+			animation: delayedRotate 10s infinite;
+		}
+		text:first-of-type {
+			--rotate-factor: 1;
+		}
+		text:last-of-type {
+			--rotate-factor: -1;
+		}
+		@keyframes delayedRotate {
+			10%, 100% {
+				rotate: calc(180deg * var(--rotate-factor));
+			}
+		}
+	</style>
+</svg>

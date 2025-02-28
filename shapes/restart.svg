@@ -1,0 +1,8 @@
+<svg width="36" height="36" viewBox="-2 -2 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<title>Restart</title>
+	<g stroke="rgb(50% 50% 50%)" stroke-width="3" stroke-linecap="round">
+		<circle cx="16" cy="16" r="16" stroke-dasharray="50 12"/>
+		<line x1="4" y1="6" x2="10" y2="6"/>
+		<line x1="4" y1="6" x2="4" y2="0"/>
+	</g>
+</svg>
