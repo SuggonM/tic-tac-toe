@@ -98,7 +98,7 @@ html, body, #game {
 			transition: stroke-dasharray 0.5s;
 		}
 	}
-	&[data-player] {
+	&:disabled {
 		pointer-events: none;
 	}
 	&:is([data-player], :hover, :focus-visible) svg {
